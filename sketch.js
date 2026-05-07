@@ -177,13 +177,13 @@ function drawZerothLaw() {
   drawSlider(150, 560, "Temp A", tempA);
   drawSlider(650, 560, "Temp B", tempB);
 
-  if (tempA > tempB + 1) drawArrow(340, 355, 715, 355, "Heat flows A → B", color(255,160,0));
-  else if (tempB > tempA + 1) drawArrow(715, 355, 340, 355, "Heat flows B → A", color(255,160,0));
+  if (tempA > tempB + 1) drawArrow(340, 355, 715, 355, "Heat flows A to B", color(255,160,0));
+  else if (tempB > tempA + 1) drawArrow(715, 355, 340, 355, "Heat flows B to A", color(255,160,0));
   else {
     stroke(0,255,100); strokeWeight(2);
     line(340,355,525,355); line(715,355,525,355); noStroke();
     fill(0,255,100); textSize(12);
-    text("EQUILIBRIUM — equal temperatures, no net flow", 525, 332);
+    text("EQUILIBRIUM - equal temperatures, no net flow", 525, 332);
     textSize(16);
   }
 
@@ -254,7 +254,7 @@ function drawFirstLaw() {
 // ==================== SECOND LAW ====================
 function drawSecondLaw() {
   fill(255); textSize(18);
-  text("Second Law: Entropy naturally increases — disorder always grows.", width/2, 80);
+  text("Second Law: Entropy naturally increases - disorder always grows.", width/2, 80);
 
   entropyLevel = constrain(entropyLevel + 0.08, 5, 120);
   for (let i = 0; i < floor(entropyLevel); i++) {
@@ -317,7 +317,7 @@ function drawThirdLaw() {
 
   fill(255); textSize(13);
   text("Move mouse LEFT to cool the system (slower particles)", width/2, height-65);
-  text("System Temp: " + round(thirdLawTemp) + "°C", width/2, height-40);
+  text("System Temp: " + round(thirdLawTemp) + " degrees C", width/2, height-40);
 
   fill(40,40,40); noStroke(); rect(50, 200, 30, 300, 5);
   for (let i = 0; i < 300; i++) {
@@ -329,19 +329,19 @@ function drawThirdLaw() {
   let mY = map(thirdLawTemp, 0, 100, 500, 200);
   fill(255,255,0); ellipse(65, mY, 16, 16);
   fill(255); textSize(11); textAlign(LEFT);
-  text("100°C", 86, 206);
-  text("0°C (Abs. Zero)", 86, 492);
+  text("100 degrees C", 86, 206);
+  text("0 degrees C (Abs. Zero)", 86, 492);
   textAlign(CENTER, CENTER);
 
   drawArrow(160, mY, 86, mY, "Current temp", color(255,255,0));
   fill(100,200,255,200); textSize(11);
-  text("Absolute Zero (0 K = -273°C): the theoretical point where all molecular motion ceases.", width/2, 152);
+  text("Absolute Zero (0 K = -273 degrees C): the theoretical point where all molecular motion ceases.", width/2, 152);
 
   drawExplanationBox(200, 575, 470, 118, "What This Means:", [
     "Temperature IS the average kinetic energy of particles.",
     "The hotter something is, the faster its particles vibrate.",
-    "Absolute zero (0 Kelvin, -273°C) is the point where particles",
-    "would have zero kinetic energy and stop moving entirely.",
+    "Absolute zero (0 Kelvin, -273 degrees C) is the point where",
+    "particles would have zero kinetic energy and stop moving.",
     "We can get extremely close but never actually reach it:",
     "removing the last bit of energy requires infinite work."
   ]);
@@ -366,13 +366,13 @@ function drawThermometerTab() {
   let mH = map(tempA, 0, 100, 0, bh - 8);
   fill(210, 50, 50); rect(tx-10, by+bh-mH, 20, mH);
   fill(255); textSize(14);
-  text("Thermometer: " + round(tempA) + "°C", tx+10, by-14);
-  text("Water: " + round(tempA) + "°C", bx+bw/2, by-24);
+  text("Thermometer: " + round(tempA) + " degrees C", tx+10, by-14);
+  text("Water: " + round(tempA) + " degrees C", bx+bw/2, by-24);
 
   let fx = bx+bw/2, fy = by+bh+52;
   fill(190, 80, 0); rect(fx-20, fy-20, 40, 20);
   fill(255, 60, 0, 160); rect(fx-20, fy-20, fireSlider*0.4, 20);
-  fill(255, 180, 0); textSize(13); text("Fire: " + round(fireSlider) + "°C", fx, fy-34);
+  fill(255, 180, 0); textSize(13); text("Fire: " + round(fireSlider) + " degrees C", fx, fy-34);
 
   fill(160, 220, 255, 210); noStroke(); rect(iceX, iceY, 40, 40, 5);
   fill(255); textSize(11); text("Drag Ice", iceX+20, iceY-10);
@@ -404,7 +404,7 @@ function drawThermometerTab() {
   drawQuestionsBox(530, 590, 650, 105, [
     "Q1: What happens to the thermometer when you increase fire power?",
     "Q2: Drag the ice into the beaker. What law governs what you see?",
-    "Q3: Can the water exceed 100°C here? What would happen in reality?",
+    "Q3: Can the water exceed 100 degrees C here? What would happen in reality?",
     "Q4: Which law explains why the thermometer reads the water temperature?"
   ]);
 }
@@ -458,18 +458,16 @@ function drawPerpetualMotionTab() {
   text("Lost: " + round(pmEnergyLost) + "%", 690, 590);
   textAlign(CENTER, CENTER);
 
-  // Friction slider
   fill(255); textSize(12); textAlign(LEFT); text("Friction:", 870, 630); textAlign(CENTER, CENTER);
   stroke(255); strokeWeight(1); line(870, 648, 1100, 648); noStroke();
   fill(100, 150, 210); ellipse(870 + pmFriction*230, 648, 16, 16);
   if (mouseIsPressed && mouseY > 640 && mouseY < 658 && mouseX > 870 && mouseX < 1100)
     pmFriction = map(mouseX, 870, 1100, 0.05, 1.0);
 
-  // Restart button
   fill(pmRunning ? color(70, 80, 100) : color(0, 155, 70));
   noStroke(); rect(450, 660, 200, 40, 8);
   fill(255); textSize(14);
-  text(pmRunning ? "Machine Running..." : "↺ RESTART MACHINE", 550, 680);
+  text(pmRunning ? "Machine Running..." : "RESTART MACHINE", 550, 680);
 
   if (!pmRunning) {
     fill(255, 70, 70, 220); textSize(17);
