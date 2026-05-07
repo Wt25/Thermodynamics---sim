@@ -356,4 +356,160 @@ function drawThermometerTab() {
   fill(255); textSize(width*0.014); text("Interactive Thermometer: Beaker, Fire and Ice", width/2, height*0.07);
 
   let bx=width/2-width*0.07, by=height*0.18, bw=width*0.14, bh=height*0.42;
-  fill(0,90,190,180
+  fill(0,90,190,180); noStroke(); rect(bx, by, bw, bh, 10);
+  fill(160,190,255,60); rect(bx, by, bw, bh, 10);
+
+  let tx=bx+bw+width*0.05;
+  fill(185); rect(tx-width*0.01, by, width*0.02, bh);
+  let mH=map(tempA,0,100,0,bh-8);
+  fill(210,50,50); rect(tx-width*0.01, by+bh-mH, width*0.02, mH);
+  fill(255); textSize(width*0.011);
+  text("Thermometer: "+round(tempA)+"°C", tx+width*0.06, by-height*0.02);
+  text("Water: "+round(tempA)+"°C", bx+bw/2, by-height*0.03);
+
+  let fx=bx+bw/2, fy=by+bh+height*0.07;
+  fill(190,80,0); rect(fx-width*0.03, fy-height*0.04, width*0.06, height*0.04);
+  fill(255,60,0,160); rect(fx-width*0.03, fy-height*0.04, fireSlider/100*width*0.06, height*0.04);
+  fill(255,180,0); textSize(width*0.011); text("Fire: "+round(fireSlider)+"°C", fx, fy-height*0.06);
+
+  fill(160,220,255,210); noStroke(); rect(iceX, iceY, width*0.05, height*0.07, 5);
+  fill(255); textSize(width*0.009); text("Drag Ice", iceX+width*0.025, iceY-height*0.02);
+  if (mouseIsPressed && dist(mouseX,mouseY,iceX+width*0.025,iceY+height*0.035)<width*0.04) {
+    iceX=mouseX-width*0.025; iceY=mouseY-height*0.035;
+  }
+
+  drawSlider(width*0.7, height*0.88, "Ice Power", icePower);
+  drawSlider(width*0.1, height*0.88, "Fire Power", fireSlider);
+
+  let netHeat=fireSlider*0.01;
+  if (iceX>bx && iceX<bx+bw && iceY>by && iceY<by+bh) netHeat-=icePower*0.01;
+  tempA=constrain(tempA+netHeat, 0, 100);
+
+  drawArrow(fx, fy-height*0.03, bx+bw/2, by+bh, "Heat upward", color(255,120,0));
+  drawArrow(tx-width*0.01, by+bh-mH, tx-width*0.01, by+bh, "Mercury\nexpands", color(255,0,0));
+  if (iceX>bx-50 && iceX<bx+bw+50 && iceY>by-50 && iceY<by+bh+50)
+    drawArrow(iceX+width*0.025, iceY+height*0.035, bx+bw/2, by+bh/2, "Cooling\nwater", color(150,220,255));
+  drawArrow(bx+bw+5, by+bh/2, tx-width*0.012, by+bh/2, "Equilibrium\nread here", color(200,200,255));
+
+  let bw2=width*0.44, bh2=height*0.17;
+  drawExpBox(width*0.02, height*0.81, bw2, bh2, "What This Means:", [
+    "Zeroth Law in action: thermometer reaches equilibrium",
+    "with the water, so its reading equals water temperature.",
+    "Fire adds energy (First Law), ice removes it.",
+    "Net temperature change depends on balance",
+    "between heat added and heat removed."
+  ]);
+  drawQBox(width*0.48, height*0.81, bw2, bh2, [
+    "Q1: What happens to thermometer with more fire power?",
+    "Q2: Drag the ice in. What law governs what you see?",
+    "Q3: Can water exceed 100°C here? What happens in reality?",
+    "Q4: Which law explains the thermometer reading?"
+  ]);
+}
+
+// ==================== PERPETUAL MOTION TAB ====================
+function drawPerpetualMotionTab() {
+  fill(255); textSize(width*0.014); text("Perpetual Motion Machine: Why It Cannot Exist", width/2, height*0.07);
+
+  if (pmRunning && pmEnergy>0) {
+    pmWheelSpeed=map(pmEnergy,0,100,0,4);
+    pmWheelAngle+=pmWheelSpeed;
+    let loss=pmFriction*(0.5+pmWheelSpeed*0.1);
+    pmEnergy=max(0,pmEnergy-loss);
+    pmEnergyLost+=loss;
+    if (floor(pmWheelAngle)%360<4) pmCycleCount++;
+  } else { pmWheelSpeed=0; pmRunning=false; }
+
+  let wx=width*0.32, wy=height*0.45, wr=min(width,height)*0.14;
+  stroke(180); strokeWeight(3); noFill(); ellipse(wx, wy, wr*2, wr*2);
+  for (let i=0; i<8; i++) {
+    let ang=pmWheelAngle*PI/180+i*TWO_PI/8;
+    let sx=wx+cos(ang)*wr, sy=wy+sin(ang)*wr;
+    stroke(150); strokeWeight(2); line(wx,wy,sx,sy);
+    let wo=wr*0.15*sin(ang*2+frameCount*0.05);
+    fill(200,120,50); noStroke();
+    ellipse(sx+cos(ang)*wo, sy+sin(ang)*wo, wr*0.12, wr*0.12);
+  }
+  fill(90); noStroke(); ellipse(wx, wy, wr*0.12, wr*0.12);
+  drawArrow(wx+wr*0.2, wy, wx+wr*0.5, wy-wr*0.35, "Friction at axle", color(255,100,100));
+
+  // Energy bar
+  let bx=width*0.62, by=height*0.2, bh=height*0.45, bw=width*0.04;
+  fill(40,40,40); noStroke(); rect(bx, by, bw, bh, 5);
+  let eH=map(pmEnergy,0,100,0,bh);
+  fill(lerpColor(color(255,0,0),color(0,210,80),pmEnergy/100));
+  rect(bx, by+bh-eH, bw, eH, 5);
+  fill(255); textSize(width*0.01);
+  text("Stored\nEnergy", bx+bw/2, by-height*0.04);
+  text(round(pmEnergy)+"%", bx+bw/2, by+bh+height*0.03);
+
+  // Lost bar
+  let lx=width*0.72;
+  fill(40,40,40); noStroke(); rect(lx, by, bw, bh, 5);
+  let lH=map(min(pmEnergyLost,100),0,100,0,bh);
+  fill(255,70,70); rect(lx, by+bh-lH, bw, lH, 5);
+  fill(255); text("Heat\nLost", lx+bw/2, by-height*0.04);
+  text(round(min(pmEnergyLost,100))+"%", lx+bw/2, by+bh+height*0.03);
+
+  drawArrow(width*0.59, by+bh/2, bx+bw, by+bh-eH+5, "Depleting", color(255,80,80));
+  drawArrow(width*0.69, by+bh/2, lx+bw, by+bh-lH+5, "Waste heat", color(255,80,80));
+
+  fill(255); textSize(width*0.011); textAlign(LEFT);
+  text("Cycles: "+pmCycleCount, width*0.62, height*0.72);
+  text("Speed: "+nf(pmWheelSpeed,1,2)+" rpm", width*0.62, height*0.76);
+  text("Energy: "+round(pmEnergy)+"%", width*0.62, height*0.80);
+  text("Lost: "+round(pmEnergyLost)+"%", width*0.62, height*0.84);
+  textAlign(CENTER,CENTER);
+
+  // Friction slider
+  fill(255); textSize(width*0.01); textAlign(LEFT);
+  text("Friction:", width*0.62, height*0.71);
+  textAlign(CENTER,CENTER);
+  let slx=width*0.73, sly=height*0.715, slw=width*0.2;
+  stroke(255); strokeWeight(1); line(slx, sly, slx+slw, sly); noStroke();
+  fill(100,150,210); ellipse(slx+pmFriction*slw, sly, width*0.013, width*0.013);
+  if (mouseIsPressed && mouseY>sly-10 && mouseY<sly+10 && mouseX>slx && mouseX<slx+slw)
+    pmFriction=map(mouseX, slx, slx+slw, 0.05, 1.0);
+
+  // Restart button
+  fill(pmRunning ? color(70,80,100) : color(0,155,70));
+  noStroke(); rect(width*0.38, height*0.89, width*0.24, height*0.07, 8);
+  fill(255); textSize(width*0.012);
+  text(pmRunning ? "Machine Running..." : "RESTART MACHINE", width/2, height*0.925);
+
+  if (!pmRunning) {
+    fill(255,70,70,220); textSize(width*0.013);
+    text("The machine has stopped. All energy lost to heat.", width/2, height*0.82);
+    fill(255,255,110); textSize(width*0.011);
+    text("Proves a perpetual motion machine violates the 1st and 2nd Laws.", width/2, height*0.86);
+  }
+
+  fill(255,200,100,190); textSize(width*0.009); textAlign(LEFT);
+  text("1st Law: Energy cannot be created. The machine cannot\ngenerate power to replace what friction steals.", width*0.02, height*0.73);
+  text("2nd Law: Every mechanical process creates waste heat.\nThis energy is permanently unavailable for work.", width*0.02, height*0.79);
+  textAlign(CENTER,CENTER);
+
+  let bw2=width*0.44, bh2=height*0.17;
+  drawExpBox(width*0.02, height*0.62, bw2, bh2, "Why It Cannot Work:", [
+    "A perpetual machine would run forever without energy input.",
+    "(1st Law) Energy cannot be created, so the machine",
+    "cannot generate new energy to replace losses.",
+    "(2nd Law) Every real process loses energy as heat.",
+    "The wheel slows and stops; heat cannot spin it again."
+  ]);
+  drawQBox(width*0.48, height*0.62, bw2, bh2, [
+    "Q1: What happens to the wheel over time? Which law?",
+    "Q2: Increase friction. Does it stop faster? Why?",
+    "Q3: Where does the lost energy go? Can we get it back?",
+    "Q4: What would need to be true for perpetual motion to work?"
+  ]);
+
+  if (pmRunning) {
+    let ang=pmWheelAngle*PI/180;
+    let ax=wx+cos(ang)*(wr+wr*0.18), ay=wy+sin(ang)*(wr+wr*0.18);
+    drawArrow(ax, ay, ax+cos(ang+PI/2)*wr*0.22, ay+sin(ang+PI/2)*wr*0.22, "Rotation", color(0,200,255));
+  }
+}
+</script>
+</body>
+</html>
