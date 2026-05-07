@@ -15,38 +15,32 @@ let tempB = 20;
 let energyInput = 60;
 let entropyLevel = 10;
 
-let iceX = 500,
-    iceY = 400,
-    icePower = 50;
+let iceX = 500;
+let iceY = 400;
+let icePower = 50;
 
 let fireSlider = 50;
 
 let energyParticles = [];
-let heatFlowParticles = [];
-
-let hotTemp = 80;
-let coldTemp = 20;
-let workInput = 0;
-
-// Third Law variables
-let thirdLawTemp = 100;
-let ice3X = 500,
-    ice3Y = 400;
-
-let ice3Power = 20;
-let draggingIce3 = false;
 let thirdParticles = [];
 
-// Perpetual Motion variables
+let workInput = 0;
+
+// Third Law
+let thirdLawTemp = 100;
+let ice3X = 500;
+let ice3Y = 400;
+let ice3Power = 20;
+let draggingIce3 = false;
+
+// Perpetual Motion
 let pmWheelAngle = 0;
 let pmWheelSpeed = 2.0;
 let pmEnergy = 100;
 let pmFriction = 0.3;
-let pmBoost = 0;
 let pmRunning = true;
 let pmCycleCount = 0;
 let pmEnergyLost = 0;
-let showPMArrows = true;
 
 // ==================== SETUP ====================
 function setup() {
@@ -104,13 +98,37 @@ function draw() {
   }
 }
 
+// ==================== MOUSE ====================
+function mousePressed() {
+  if (mouseY < 60) {
+    currentTab = floor(mouseX / 190);
+
+    if (currentTab >= tabs.length) {
+      currentTab = tabs.length - 1;
+    }
+  }
+
+  if (
+    currentTab === 5 &&
+    mouseX > 500 &&
+    mouseX < 700 &&
+    mouseY > 660 &&
+    mouseY < 700
+  ) {
+    pmEnergy = 100;
+    pmWheelSpeed = 2.0;
+    pmCycleCount = 0;
+    pmEnergyLost = 0;
+    pmRunning = true;
+  }
+}
+
 // ==================== TOP NAVIGATION ====================
 function drawTopTabs() {
   fill(20);
   rect(0, 0, width, 60);
 
   for (let i = 0; i < tabs.length; i++) {
-
     if (i === currentTab) {
       fill(0, 180, 255);
     } else {
@@ -130,105 +148,8 @@ function drawTopTabs() {
   }
 }
 
-function mousePressed() {
-
-  if (mouseY < 60) {
-    currentTab = floor(mouseX / 190);
-
-    if (currentTab >= tabs.length) {
-      currentTab = tabs.length - 1;
-    }
-  }
-
-  if (
-    currentTab === 5 &&
-    mouseX > 500 &&
-    mouseX < 700 &&
-    mouseY > 660 &&
-    mouseY < 700
-  ) {
-
-    pmEnergy = 100;
-    pmWheelSpeed = 2.0;
-    pmCycleCount = 0;
-    pmEnergyLost = 0;
-    pmRunning = true;
-    pmBoost = 0;
-  }
-}
-
-// ==================== EXPLANATION BOX ====================
-function drawExplanationBox(x, y, w, h, title, lines) {
-
-  fill(0, 0, 0, 160);
-  stroke(0, 180, 255);
-  strokeWeight(1.5);
-
-  rect(x, y, w, h, 8);
-
-  noStroke();
-
-  fill(0, 200, 255);
-
-  textSize(13);
-  textAlign(LEFT, TOP);
-
-  text(title, x + 10, y + 8);
-
-  fill(220);
-
-  textSize(11);
-
-  for (let i = 0; i < lines.length; i++) {
-    text(
-      lines[i],
-      x + 10,
-      y + 26 + i * 14
-    );
-  }
-
-  textAlign(CENTER, CENTER);
-  textSize(16);
-}
-
-// ==================== QUESTIONS BOX ====================
-function drawQuestionsBox(x, y, w, h, questions) {
-
-  fill(0, 60, 0, 180);
-
-  stroke(0, 255, 100);
-  strokeWeight(1.5);
-
-  rect(x, y, w, h, 8);
-
-  noStroke();
-
-  fill(0, 255, 120);
-
-  textSize(13);
-  textAlign(LEFT, TOP);
-
-  text("Guiding Questions:", x + 10, y + 8);
-
-  fill(200, 255, 200);
-
-  textSize(11);
-
-  for (let i = 0; i < questions.length; i++) {
-    text(
-      questions[i],
-      x + 10,
-      y + 26 + i * 15
-    );
-  }
-
-  textAlign(CENTER, CENTER);
-  textSize(16);
-}
-
 // ==================== ARROW ====================
 function drawArrow(x1, y1, x2, y2, label, c) {
-
   stroke(c);
   strokeWeight(2);
 
@@ -244,21 +165,18 @@ function drawArrow(x1, y1, x2, y2, label, c) {
   triangle(
     x2,
     y2,
-
     x2 - headLen * cos(angle - 0.4),
     y2 - headLen * sin(angle - 0.4),
-
     x2 - headLen * cos(angle + 0.4),
     y2 - headLen * sin(angle + 0.4)
   );
 
   fill(255, 255, 150);
 
-  textSize(11);
-
   let mx = (x1 + x2) / 2;
   let my = (y1 + y2) / 2;
 
+  textSize(11);
   text(label, mx, my - 10);
 
   textSize(16);
@@ -266,14 +184,12 @@ function drawArrow(x1, y1, x2, y2, label, c) {
 
 // ==================== ZEROTH LAW ====================
 function drawZerothLaw() {
-
   fill(255);
 
   textSize(20);
 
   text(
-    "Zeroth Law: If Two Systems are in thermal equilibrium with a third system,\n" +
-    "they are in thermal equilibrium with each other",
+    "Zeroth Law: Thermal Equilibrium",
     width / 2,
     85
   );
@@ -284,8 +200,7 @@ function drawZerothLaw() {
   let transferCount = int(abs(tempA - tempB));
 
   for (let i = 0; i < transferCount; i++) {
-
-    let x = lerp(300, 750, random(1));
+    let x = lerp(300, 750, random());
     let y = 380 + random(-40, 40);
 
     fill(255, 160, 0);
@@ -294,7 +209,6 @@ function drawZerothLaw() {
   }
 
   if (abs(tempA - tempB) > 0.05) {
-
     let flow = (tempA - tempB) * 0.01;
 
     tempA -= flow;
@@ -307,26 +221,23 @@ function drawZerothLaw() {
 
 // ==================== FIRST LAW ====================
 function drawFirstLaw() {
-
   fill(255);
 
   textSize(20);
 
   text(
-    "First Law: Energy cannot be created or destroyed, only converted",
+    "First Law: Energy cannot be created or destroyed",
     width / 2,
     80
   );
 
   if (frameCount % int(map(energyInput, 0, 100, 30, 5)) === 0) {
-
     energyParticles.push(
       new EnergyParticle(180, 300)
     );
   }
 
   for (let i = energyParticles.length - 1; i >= 0; i--) {
-
     let p = energyParticles[i];
 
     p.updateFirstLaw();
@@ -342,13 +253,12 @@ function drawFirstLaw() {
 
 // ==================== SECOND LAW ====================
 function drawSecondLaw() {
-
   fill(255);
 
   textSize(20);
 
   text(
-    "Second Law: Entropy naturally increases",
+    "Second Law: Entropy increases",
     width / 2,
     80
   );
@@ -358,14 +268,9 @@ function drawSecondLaw() {
   entropyLevel = constrain(entropyLevel, 5, 120);
 
   for (let i = 0; i < entropyLevel; i++) {
-
     let spread = entropyLevel * 3;
 
-    fill(
-      150,
-      random(255),
-      random(255)
-    );
+    fill(150, random(255), random(255));
 
     ellipse(
       width / 2 + random(-spread, spread),
@@ -375,18 +280,17 @@ function drawSecondLaw() {
     );
   }
 
-  drawSlider(300, 620, "Entropy Level", entropyLevel);
+  drawSlider(300, 620, "Entropy", entropyLevel);
 }
 
 // ==================== THIRD LAW ====================
 function drawThirdLaw() {
-
   fill(255);
 
   textSize(20);
 
   text(
-    "Third Law: As temperature approaches absolute zero, motion stops",
+    "Third Law: Motion stops near absolute zero",
     width / 2,
     80
   );
@@ -397,11 +301,14 @@ function drawThirdLaw() {
     (targetTemp - thirdLawTemp) * 0.05;
 
   for (let p of thirdParticles) {
-
     let speed = thirdLawTemp * 0.05;
 
     p.display(speed);
   }
+
+  fill(150, 220, 255);
+
+  rect(ice3X, ice3Y, 40, 40, 5);
 
   fill(255);
 
@@ -416,7 +323,6 @@ function drawThirdLaw() {
 
 // ==================== THERMOMETER TAB ====================
 function drawThermometerTab() {
-
   fill(255);
 
   textSize(20);
@@ -429,6 +335,7 @@ function drawThermometerTab() {
 
   let bx = width / 2 - 60;
   let by = 300;
+
   let bw = 120;
   let bh = 250;
 
@@ -472,11 +379,13 @@ function drawThermometerTab() {
     bx + bw / 2,
     by - 20
   );
+
+  drawSlider(200, 700, "Fire Power", fireSlider);
+  drawSlider(900, 680, "Ice Power", icePower);
 }
 
 // ==================== PERPETUAL MOTION ====================
 function drawPerpetualMotionTab() {
-
   fill(255);
 
   textSize(20);
@@ -488,7 +397,6 @@ function drawPerpetualMotionTab() {
   );
 
   if (pmRunning && pmEnergy > 0) {
-
     pmWheelSpeed =
       map(pmEnergy, 0, 100, 0, 4);
 
@@ -505,7 +413,6 @@ function drawPerpetualMotionTab() {
     pmEnergy = max(pmEnergy, 0);
 
   } else {
-
     pmWheelSpeed = 0;
     pmRunning = false;
   }
@@ -524,7 +431,6 @@ function drawPerpetualMotionTab() {
   let numSpokes = 8;
 
   for (let i = 0; i < numSpokes; i++) {
-
     let angle =
       radians(pmWheelAngle) +
       i * TWO_PI / numSpokes;
@@ -539,6 +445,8 @@ function drawPerpetualMotionTab() {
 
   fill(255);
 
+  noStroke();
+
   text(
     "Energy Remaining: " +
     int(pmEnergy) +
@@ -546,11 +454,34 @@ function drawPerpetualMotionTab() {
     850,
     250
   );
+
+  text(
+    "Energy Lost: " +
+    int(pmEnergyLost) +
+    "%",
+    850,
+    290
+  );
+
+  drawSlider(900, 650, "Friction", pmFriction * 100);
+
+  fill(pmRunning ? 80 : color(0, 180, 80));
+
+  rect(500, 660, 200, 40, 8);
+
+  fill(255);
+
+  text(
+    pmRunning
+      ? "Machine Running..."
+      : "RESTART MACHINE",
+    600,
+    680
+  );
 }
 
 // ==================== SLIDER ====================
 function drawSlider(x, y, label, val) {
-
   stroke(255);
 
   line(x, y, x + 200, y);
@@ -573,7 +504,6 @@ function drawSlider(x, y, label, val) {
     mouseIsPressed &&
     dist(mouseX, mouseY, x + val * 2, y) < 15
   ) {
-
     let newVal =
       constrain((mouseX - x) / 2, 0, 100);
 
@@ -582,13 +512,16 @@ function drawSlider(x, y, label, val) {
     if (label === "Input Energy") energyInput = newVal;
     if (label === "Ice Power") icePower = newVal;
     if (label === "Fire Power") fireSlider = newVal;
-    if (label === "Work Input") workInput = newVal;
+    if (label === "Entropy") entropyLevel = newVal;
+
+    if (label === "Friction") {
+      pmFriction = newVal / 100;
+    }
   }
 }
 
 // ==================== THERMOMETER ====================
 function drawThermometer(x, y, temp, label) {
-
   fill(200);
 
   rect(x - 20, y - 150, 40, 150);
@@ -609,38 +542,28 @@ function drawThermometer(x, y, temp, label) {
 
 // ==================== ENERGY PARTICLE ====================
 class EnergyParticle {
-
   constructor(x, y) {
-
     this.pos = createVector(x, y);
-
     this.vel = createVector(2, 0);
-
     this.type = 0;
   }
 
   updateFirstLaw() {
-
     this.pos.add(this.vel);
 
     if (
       this.type === 0 &&
       this.pos.x > 400
     ) {
-
-      let r = random(1);
+      let r = random();
 
       if (r < 0.6) {
-
         this.type = 1;
-
         this.vel =
           createVector(2, -1.5);
 
       } else {
-
         this.type = 2;
-
         this.vel =
           createVector(2, 1.5);
       }
@@ -648,7 +571,6 @@ class EnergyParticle {
   }
 
   display() {
-
     if (this.type === 0) {
       fill(255, 200, 0);
     }
@@ -672,7 +594,6 @@ class EnergyParticle {
   }
 
   offscreen() {
-
     return (
       this.pos.x > width ||
       this.pos.y < 0 ||
@@ -683,14 +604,11 @@ class EnergyParticle {
 
 // ==================== THIRD LAW PARTICLE ====================
 class ThirdLawParticle {
-
   constructor(x, y) {
-
     this.pos = createVector(x, y);
   }
 
   display(speed) {
-
     let dx = random(-speed, speed);
     let dy = random(-speed, speed);
 
