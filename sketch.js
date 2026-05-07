@@ -497,6 +497,3 @@ function drawPerpetualMotionTab() {
     drawArrow(ax, ay, ax+cos(ang+PI/2)*wr*0.22, ay+sin(ang+PI/2)*wr*0.22, "Rotation", color(0,200,255));
   }
 }
-</script>
-</body>
-</html>
