@@ -1,4 +1,3 @@
-<script>
 let currentTab = 0;
 const tabs = ["Zeroth Law", "First Law", "Second Law", "Third Law", "Thermometer", "Perpetual Motion"];
 
